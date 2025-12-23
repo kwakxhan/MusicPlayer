@@ -2,4 +2,7 @@
 <resources>
     <string name="album_art">Album Art</string>
     <string name="no_tracks_found">No tracks found</string>
+    <string name="play_pause">Play/Pause</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
 </resources>
