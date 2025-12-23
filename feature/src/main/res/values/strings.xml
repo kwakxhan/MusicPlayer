@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="album_art">Album Art</string>
+    <string name="no_tracks_found">No tracks found</string>
+</resources>
