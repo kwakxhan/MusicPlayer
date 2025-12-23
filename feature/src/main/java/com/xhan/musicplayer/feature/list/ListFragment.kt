@@ -10,7 +10,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.xhan.musicplayer.feature.R
 import com.xhan.musicplayer.feature.databinding.FragmentListBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -43,6 +45,7 @@ class ListFragment : Fragment() {
     private fun setupRecyclerView() {
         trackAdapter = TrackAdapter { track ->
             viewModel.onTrackClick(track)
+            findNavController().navigate(R.id.action_list_to_detail)
         }
 
         binding.recyclerView.apply {

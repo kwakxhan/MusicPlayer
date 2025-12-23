@@ -39,6 +39,7 @@ class MusicControllerImpl @Inject constructor(
         CoroutineScope(SupervisorJob() + Dispatchers.Main) // SupervisorJob: 자식 코루틴 중 하나가 실패해도 다른 코루틴들은 계속 실행
 
     private var mediaController: MediaController? = null
+    private var currentTrack: Track? = null
 
     private val _playbackState = MutableStateFlow(PlaybackState())
     override val playbackState: StateFlow<PlaybackState> = _playbackState.asStateFlow()
@@ -96,7 +97,7 @@ class MusicControllerImpl @Inject constructor(
     private fun updatePlaybackState() {
         val controller = mediaController ?: return
         _playbackState.value = PlaybackState(
-            currentTrack = null,
+            currentTrack = currentTrack,
             isPlaying = controller.isPlaying,
             position = controller.currentPosition,
             duration = controller.duration.coerceAtLeast(0L),
@@ -114,6 +115,7 @@ class MusicControllerImpl @Inject constructor(
 
     override suspend fun play(track: Track) {
         val controller = mediaController ?: return
+        currentTrack = track
         val mediaItem = track.toMediaItem()
         controller.setMediaItem(mediaItem)
         controller.prepare()

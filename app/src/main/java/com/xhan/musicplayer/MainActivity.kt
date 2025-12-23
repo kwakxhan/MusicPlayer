@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.listFragment)
+            setOf(com.xhan.musicplayer.feature.R.id.listFragment)
         )
 
         setupActionBarWithNavController(navController, appBarConfiguration)

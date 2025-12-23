@@ -51,6 +51,10 @@ dependencies {
     implementation(libs.androidx.media3.ui)
     implementation(libs.coil)
 
+    // Navigation
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
