@@ -1,5 +1,6 @@
 package com.xhan.musicplayer.di
 
+import android.content.ContentResolver
 import android.content.Context
 import dagger.Module
 import dagger.Provides
@@ -31,5 +32,11 @@ object AppModule {
     @Singleton
     fun provideContext(@ApplicationContext context: Context): Context {
         return context
+    }
+
+    @Provides
+    @Singleton
+    fun provideContentResolver(@ApplicationContext context: Context): ContentResolver {
+        return context.contentResolver
     }
 }
