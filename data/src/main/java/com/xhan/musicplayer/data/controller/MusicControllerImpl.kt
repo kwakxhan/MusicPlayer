@@ -40,6 +40,8 @@ class MusicControllerImpl @Inject constructor(
 
     private var mediaController: MediaController? = null
     private var currentTrack: Track? = null
+    private var playlist: List<Track> = emptyList()
+    private var currentIndex: Int = -1
 
     private val _playbackState = MutableStateFlow(PlaybackState())
     override val playbackState: StateFlow<PlaybackState> = _playbackState.asStateFlow()
@@ -84,12 +86,24 @@ class MusicControllerImpl @Inject constructor(
 
         /** 트랙 전환 */
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            updateCurrentTrackFromMediaItem(mediaItem)
             updatePlaybackState()
         }
 
         /** 버퍼링, 준비 완료 등 등 */
         override fun onPlaybackStateChanged(playbackState: Int) {
             updatePlaybackState()
+        }
+    }
+
+    /** MediaItem으로 부터 현재 재생 중인 트랙 정보 업데이트 */
+    private fun updateCurrentTrackFromMediaItem(mediaItem: MediaItem?) {
+        mediaItem?.let { item ->
+            val mediaId = item.mediaId
+            currentIndex = playlist.indexOfFirst { it.id.toString() == mediaId }
+            if (currentIndex >= 0) {
+                currentTrack = playlist[currentIndex]
+            }
         }
     }
 
@@ -116,8 +130,24 @@ class MusicControllerImpl @Inject constructor(
     override suspend fun play(track: Track) {
         val controller = mediaController ?: return
         currentTrack = track
+        currentIndex = 0
+        playlist = listOf(track)
         val mediaItem = track.toMediaItem()
         controller.setMediaItem(mediaItem)
+        controller.prepare()
+        controller.play()
+    }
+
+    override suspend fun playAll(tracks: List<Track>, startIndex: Int) {
+        val controller = mediaController ?: return
+        if (tracks.isEmpty()) return
+
+        playlist = tracks
+        currentIndex = startIndex.coerceIn(0, tracks.size - 1)
+        currentTrack = tracks[currentIndex]
+
+        val mediaItems = tracks.map { it.toMediaItem() }
+        controller.setMediaItems(mediaItems, currentIndex, 0)
         controller.prepare()
         controller.play()
     }

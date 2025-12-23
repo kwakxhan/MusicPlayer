@@ -43,7 +43,10 @@ class ListViewModel @Inject constructor(
     fun onTrackClick(track: Track) {
         viewModelScope.launch {
             try {
-                musicController.play(track)
+                val tracks = uiState.value.tracks
+                val index = tracks.indexOf(track)
+                if (index >= 0) musicController.playAll(tracks, index)
+                else musicController.play(track)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
