@@ -12,9 +12,11 @@ import com.xhan.musicplayer.domain.model.PlaybackState
 import com.xhan.musicplayer.domain.model.RepeatMode
 import com.xhan.musicplayer.domain.model.Track
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,6 +50,25 @@ class MusicControllerImpl @Inject constructor(
 
     init {
         connectToService()
+        startPositionUpdateLoop()
+    }
+
+    /** 재생 위치를 300ms마다 업데이트 */
+    private fun startPositionUpdateLoop() {
+        scope.launch {
+            try {
+                while (true) {
+                    delay(300)
+                    if (mediaController?.isPlaying == true) {
+                        updatePlaybackState()
+                    }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun connectToService() {
