@@ -12,8 +12,6 @@ class MarqueeTextView @JvmOverloads constructor(
     defStyleAttr: Int = android.R.attr.textViewStyle
 ) : AppCompatTextView(context, attrs, defStyleAttr) {
 
-    private var currentTrackId: Long? = null
-
     init {
         ellipsize = TextUtils.TruncateAt.MARQUEE
         marqueeRepeatLimit = -1 // marquee_forever
@@ -22,12 +20,5 @@ class MarqueeTextView @JvmOverloads constructor(
         isSelected = true
         isFocusable = true
         isFocusableInTouchMode = true
-    }
-
-    fun setTrackText(text: String?, trackId: Long?) {
-        if (trackId != currentTrackId) {
-            currentTrackId = trackId
-            this.text = text ?: ""
-        }
     }
 }

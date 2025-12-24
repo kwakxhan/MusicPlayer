@@ -13,10 +13,16 @@ import com.xhan.musicplayer.domain.model.RepeatMode
 import com.xhan.musicplayer.feature.R
 import com.xhan.musicplayer.feature.view.MarqueeTextView
 
-/** 트랙 텍스트 바인딩 */
-@BindingAdapter("trackText", "trackId", requireAll = false)
+/** 트랙 변경 감지용 텍스트 바인딩 */
+@BindingAdapter("trackText", "trackId", requireAll = true)
 fun MarqueeTextView.bindTrackText(text: String?, trackId: Long?) {
-    setTrackText(text, trackId)
+    // trackId를 태그로 저장하여 트랙 변경 감지
+    val currentTrackId = getTag(R.id.track_id_tag) as? Long
+
+    if (trackId != currentTrackId) {
+        setTag(R.id.track_id_tag, trackId)
+        this.text = text ?: ""
+    }
 }
 
 /** 앨범 아트 이미지 로딩 */

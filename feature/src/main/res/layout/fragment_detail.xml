@@ -49,6 +49,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/albumArt"
             app:trackText="@{state.currentTrack.title}"
+            app:trackId="@{state.currentTrack.id}"
             tools:text="Song Title" />
 
         <com.xhan.musicplayer.feature.view.MarqueeTextView
@@ -62,6 +63,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
             app:trackText="@{state.currentTrack.artist}"
+            app:trackId="@{state.currentTrack.id}"
             tools:text="Artist Name" />
 
         <com.xhan.musicplayer.feature.view.MarqueeTextView
@@ -75,6 +77,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/artist"
             app:trackText="@{state.currentTrack.album}"
+            app:trackId="@{state.currentTrack.id}"
             tools:text="Album Name" />
 
         <androidx.appcompat.widget.AppCompatSeekBar

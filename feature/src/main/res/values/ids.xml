@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- View 태그용 ID -->
+    <item name="track_id_tag" type="id" />
+</resources>
