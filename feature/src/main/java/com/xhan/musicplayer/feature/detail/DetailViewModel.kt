@@ -66,4 +66,24 @@ class DetailViewModel @Inject constructor(
             }
         }
     }
+
+    fun onRepeatClick() {
+        viewModelScope.launch {
+            try {
+                musicController.toggleRepeatMode()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun onShuffleClick() {
+        viewModelScope.launch {
+            try {
+                musicController.toggleShuffle()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 }

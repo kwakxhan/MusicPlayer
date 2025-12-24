@@ -5,4 +5,11 @@
     <string name="play_pause">Play/Pause</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
+    <string name="repeat_mode">Repeat Mode</string>
+    <string name="shuffle">Shuffle</string>
+
+    <string name="permission_rationale_message">음악 파일에 접근하려면 권한이 필요합니다.</string>
+    <string name="permission_allow_action">허용</string>
+    <string name="permission_denied_message">권한이 거부되어 음악을 불러올 수 없습니다.</string>
+    <string name="permission_required_message">음악 파일 접근 권한이 필요합니다</string>
 </resources>

@@ -14,4 +14,6 @@ interface MusicController {
     suspend fun next()
     suspend fun previous()
     suspend fun seekTo(position: Long)
+    suspend fun toggleRepeatMode()
+    suspend fun toggleShuffle()
 }

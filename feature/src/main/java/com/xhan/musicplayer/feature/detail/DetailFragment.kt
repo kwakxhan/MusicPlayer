@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import coil.load
 import com.xhan.musicplayer.core.util.formatDuration
+import com.xhan.musicplayer.domain.model.RepeatMode
 import com.xhan.musicplayer.feature.R
 import com.xhan.musicplayer.feature.databinding.FragmentDetailBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -76,6 +77,14 @@ class DetailFragment : Fragment() {
         binding.nextButton.setOnClickListener {
             viewModel.onNextClick()
         }
+
+        binding.repeatButton.setOnClickListener {
+            viewModel.onRepeatClick()
+        }
+
+        binding.shuffleButton.setOnClickListener {
+            viewModel.onShuffleClick()
+        }
     }
 
     private fun observePlaybackState() {
@@ -117,6 +126,19 @@ class DetailFragment : Fragment() {
         // 재생&일시정지 버튼 아이콘
         val playPauseIcon = if (state.isPlaying) R.drawable.ic_pause else R.drawable.ic_play
         binding.playPauseButton.setImageResource(playPauseIcon)
+
+        // RepeatMode 버튼 아이콘
+        val repeatIcon = when (state.repeatMode) {
+            RepeatMode.OFF -> R.drawable.ic_repeat_off
+            RepeatMode.ALL -> R.drawable.ic_repeat_all
+            RepeatMode.ONE -> R.drawable.ic_repeat_one
+        }
+        binding.repeatButton.setImageResource(repeatIcon)
+
+        // Shuffle 버튼 아이콘
+        val shuffleIcon =
+            if (state.shuffleEnabled) R.drawable.ic_shuffle_on else R.drawable.ic_shuffle_off
+        binding.shuffleButton.setImageResource(shuffleIcon)
     }
 
     override fun onDestroyView() {

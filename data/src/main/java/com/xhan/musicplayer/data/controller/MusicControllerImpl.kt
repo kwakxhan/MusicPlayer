@@ -193,6 +193,26 @@ class MusicControllerImpl @Inject constructor(
         mediaController?.seekTo(position)
     }
 
+    override suspend fun toggleRepeatMode() {
+        val controller = mediaController ?: return
+        controller.repeatMode = controller.repeatMode.getNextRepeatMode()
+        updatePlaybackState()
+    }
+
+    override suspend fun toggleShuffle() {
+        val controller = mediaController ?: return
+        controller.shuffleModeEnabled = !controller.shuffleModeEnabled
+        updatePlaybackState()
+    }
+
+    /** 반복 모드 OFF → ALL → ONE → OFF 순환 */
+    private fun Int.getNextRepeatMode(): Int = when (this) {
+        Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
+        Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
+        Player.REPEAT_MODE_ONE -> Player.REPEAT_MODE_OFF
+        else -> Player.REPEAT_MODE_OFF
+    }
+
     private fun Track.toMediaItem(): MediaItem = MediaItem.Builder()
         .setUri(contentUri)
         .setMediaId(id.toString())
