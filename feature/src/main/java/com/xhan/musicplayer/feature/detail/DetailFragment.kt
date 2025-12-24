@@ -5,22 +5,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.xhan.musicplayer.feature.databinding.FragmentDetailBinding
+import com.xhan.musicplayer.feature.util.BaseDataBindingFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class DetailFragment : Fragment() {
+class DetailFragment : BaseDataBindingFragment<FragmentDetailBinding, DetailViewModel>() {
 
-    private var _binding: FragmentDetailBinding? = null
-    private val binding get() = _binding!!
+    override val viewModel: DetailViewModel by viewModels()
 
-    private val viewModel: DetailViewModel by viewModels()
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentDetailBinding = FragmentDetailBinding.inflate(inflater, container, false)
 
     private var isUserSeeking = false
 
@@ -29,10 +31,9 @@ class DetailFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDetailBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
+        val view = super.onCreateView(inflater, container, savedInstanceState)
         binding.vm = viewModel
-        return binding.root
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,10 +74,5 @@ class DetailFragment : Fragment() {
                 }
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
