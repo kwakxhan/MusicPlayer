@@ -12,8 +12,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.xhan.musicplayer.feature.R
 import com.xhan.musicplayer.feature.databinding.FragmentListBinding
+import com.xhan.musicplayer.feature.util.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -27,6 +29,8 @@ class ListFragment : Fragment() {
 
     private lateinit var trackAdapter: TrackAdapter
 
+    private lateinit var permissionHelper: PermissionHelper
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -39,7 +43,25 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
-        observeUiState()
+        setupPermissionHelper()
+        permissionHelper.checkAndRequestPermission()
+    }
+
+    private fun setupPermissionHelper() {
+        permissionHelper = PermissionHelper(
+            fragment = this,
+            onPermissionGranted = { observeUiState() },
+            onPermissionDenied = { showPermissionDeniedMessage() }
+        )
+    }
+
+    private fun showPermissionDeniedMessage() {
+        binding.root.showSnackbar(
+            messageRes = R.string.permission_denied_message,
+            duration = Snackbar.LENGTH_LONG
+        )
+        binding.emptyText.isVisible = true
+        binding.emptyText.setText(R.string.permission_required_message)
     }
 
     private fun setupRecyclerView() {
