@@ -37,6 +37,7 @@ class ListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentListBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
@@ -88,18 +89,9 @@ class ListFragment : Fragment() {
     }
 
     private fun updateUi(uiState: ListUiState) {
-        // 로딩 상태
-        binding.progressBar.isVisible = uiState.isLoading
+        binding.uiState = uiState
 
-        // 트랙 목록
-        val hasTrack = uiState.tracks.isNotEmpty()
-        binding.recyclerView.isVisible = hasTrack && !uiState.isLoading
-        binding.emptyText.isVisible = !hasTrack && !uiState.isLoading
-
-        // 트랙 목록 업데이트
         trackAdapter.submitList(uiState.tracks)
-
-        // 현재 재생 중인 트랙
         trackAdapter.setCurrentPlayingTrack(uiState.currentPlayingTrack?.id)
     }
 

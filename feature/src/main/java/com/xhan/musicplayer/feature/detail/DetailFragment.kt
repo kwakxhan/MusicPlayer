@@ -10,12 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import coil.load
-import com.xhan.musicplayer.core.util.formatDuration
-import com.xhan.musicplayer.domain.model.PlaybackState
-import com.xhan.musicplayer.domain.model.RepeatMode
-import com.xhan.musicplayer.domain.model.Track
-import com.xhan.musicplayer.feature.R
 import com.xhan.musicplayer.feature.databinding.FragmentDetailBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -29,7 +23,6 @@ class DetailFragment : Fragment() {
     private val viewModel: DetailViewModel by viewModels()
 
     private var isUserSeeking = false
-    private var currentTrackId: Long? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,23 +30,20 @@ class DetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDetailBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.vm = viewModel
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupSeekBar()
-        setupButtons()
         observePlaybackState()
     }
 
     private fun setupSeekBar() {
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    binding.currentTime.text = progress.toLong().formatDuration()
-                }
-            }
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {}
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
                 isUserSeeking = true
@@ -68,92 +58,21 @@ class DetailFragment : Fragment() {
         })
     }
 
-    private fun setupButtons() {
-        binding.playPauseButton.setOnClickListener {
-            viewModel.onPlayPauseClick()
-        }
-
-        binding.previousButton.setOnClickListener {
-            viewModel.onPreviousClick()
-        }
-
-        binding.nextButton.setOnClickListener {
-            viewModel.onNextClick()
-        }
-
-        binding.repeatButton.setOnClickListener {
-            viewModel.onRepeatClick()
-        }
-
-        binding.shuffleButton.setOnClickListener {
-            viewModel.onShuffleClick()
-        }
-    }
-
     private fun observePlaybackState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.playbackState.collect { state ->
-                    updateUi(state)
+                    // Data Binding이 자동으로 UI 업데이트
+                    binding.state = state
+
+                    // SeekBar만 사용자 조작 중이 아닐 때 업데이트
+                    if (!isUserSeeking) {
+                        binding.seekBar.max = state.duration.toInt()
+                        binding.seekBar.progress = state.position.toInt()
+                    }
                 }
             }
         }
-    }
-
-    private fun updateUi(state: PlaybackState) {
-        val track = state.currentTrack
-
-        // 트랙이 변경되었을 때만 트랙 정보 업데이트
-        if (track?.id != currentTrackId) {
-            currentTrackId = track?.id
-            updateTrackInfo(track)
-        }
-
-        // 재생 상태는 매번 업데이트
-        updatePlaybackInfo(state)
-    }
-
-    private fun updateTrackInfo(track: Track?) {
-        if (track != null) {
-            binding.title.text = track.title
-            binding.artist.text = track.artist
-            binding.album.text = track.album
-
-            binding.albumArt.load(track.albumArtUri) {
-                crossfade(enable = true)
-                placeholder(R.drawable.ic_music_note)
-                error(R.drawable.ic_music_note)
-            }
-        }
-    }
-
-    private fun updatePlaybackInfo(state: PlaybackState) {
-        // SeekBar 업데이트
-        if (!isUserSeeking) {
-            binding.seekBar.max = state.duration.toInt()
-            binding.seekBar.progress = state.position.toInt()
-            binding.currentTime.text = state.position.formatDuration()
-        }
-
-        // 재생 시간 텍스트
-        binding.totalTime.text = state.duration.formatDuration()
-
-        // 재생&일시정지 버튼 아이콘
-        val playPauseIcon = if (state.isPlaying) R.drawable.ic_pause else R.drawable.ic_play
-        binding.playPauseButton.setImageResource(playPauseIcon)
-
-        // RepeatMode 버튼 아이콘
-        val repeatIcon = when (state.repeatMode) {
-            RepeatMode.OFF -> R.drawable.ic_repeat_off
-            RepeatMode.ALL -> R.drawable.ic_repeat_all
-            RepeatMode.ONE -> R.drawable.ic_repeat_one
-        }
-        binding.repeatButton.setImageResource(repeatIcon)
-
-        // Shuffle 버튼 아이콘
-        val shuffleIcon =
-            if (state.shuffleEnabled) R.drawable.ic_shuffle_on else R.drawable.ic_shuffle_off
-        binding.shuffleButton.setImageResource(shuffleIcon)
     }
 
     override fun onDestroyView() {
