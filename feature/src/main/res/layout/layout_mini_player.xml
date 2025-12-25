@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/miniAlbumArt"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@android:drawable/ic_menu_gallery" />
+
+    <LinearLayout
+        android:id="@+id/trackInfoContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/miniPlayPauseButton"
+        app:layout_constraintStart_toEndOf="@id/miniAlbumArt"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.xhan.musicplayer.feature.view.MarqueeTextView
+            android:id="@+id/miniTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/player_text"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Track Title" />
+
+        <com.xhan.musicplayer.feature.view.MarqueeTextView
+            android:id="@+id/miniArtist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/player_text_secondary"
+            android:textSize="12sp"
+            tools:text="Artist Name" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/miniPlayPauseButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Play Pause"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</merge>

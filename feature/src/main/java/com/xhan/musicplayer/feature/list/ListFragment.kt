@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.xhan.musicplayer.feature.R
 import com.xhan.musicplayer.feature.databinding.FragmentListBinding
+import com.xhan.musicplayer.feature.detail.DetailViewModel
 import com.xhan.musicplayer.feature.util.BaseDataBindingFragment
 import com.xhan.musicplayer.feature.util.BasePagingAdapter
 import com.xhan.musicplayer.feature.util.OnItemClick
@@ -26,6 +28,7 @@ import kotlinx.coroutines.launch
 class ListFragment : BaseDataBindingFragment<FragmentListBinding, ListViewModel>() {
 
     override val viewModel: ListViewModel by viewModels()
+    private val detailViewModel: DetailViewModel by activityViewModels()
 
     override fun inflateBinding(
         inflater: LayoutInflater,
@@ -43,13 +46,14 @@ class ListFragment : BaseDataBindingFragment<FragmentListBinding, ListViewModel>
     }
 
     private val trackAdapter by autoCleared {
-        BasePagingAdapter(helper = TrackHelper(
-            onItem = OnItemClick { track, _, _ ->
-                viewModel.onTrackClick(track)
-                findNavController().navigate(R.id.action_list_to_detail)
-                false
-            }
-        ))
+        BasePagingAdapter(
+            helper = TrackHelper(
+                onItem = OnItemClick { track, _, _ ->
+                    viewModel.onTrackClick(track)
+                    findNavController().navigate(R.id.action_list_to_detail)
+                    false
+                }
+            ))
     }
 
     private lateinit var permissionHelper: PermissionHelper
@@ -58,6 +62,7 @@ class ListFragment : BaseDataBindingFragment<FragmentListBinding, ListViewModel>
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setupPermissionHelper()
+        setupMiniPlayer()
         permissionHelper.checkAndRequestPermission()
     }
 
@@ -83,6 +88,18 @@ class ListFragment : BaseDataBindingFragment<FragmentListBinding, ListViewModel>
             layoutManager = LinearLayoutManager(requireContext())
             adapter = trackAdapter
             setHasFixedSize(true)
+        }
+    }
+
+    private fun setupMiniPlayer() {
+        binding.miniPlayer.bind(detailViewModel, viewLifecycleOwner)
+
+        binding.miniPlayer.setOnExpandClickListener {
+            findNavController().navigate(R.id.action_list_to_detail)
+        }
+
+        binding.miniPlayer.setOnPlayPauseClickListener {
+            detailViewModel.onPlayPauseClick()
         }
     }
 

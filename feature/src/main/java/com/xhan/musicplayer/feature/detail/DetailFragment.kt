@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class DetailFragment : BaseDataBindingFragment<FragmentDetailBinding, DetailViewModel>() {
 
-    override val viewModel: DetailViewModel by viewModels()
+    override val viewModel: DetailViewModel by activityViewModels() // ListFragment와 재생 상태 공유
 
     override fun inflateBinding(
         inflater: LayoutInflater,
