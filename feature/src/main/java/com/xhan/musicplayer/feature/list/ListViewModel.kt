@@ -2,15 +2,16 @@ package com.xhan.musicplayer.feature.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.xhan.musicplayer.domain.controller.MusicController
 import com.xhan.musicplayer.domain.model.Track
 import com.xhan.musicplayer.domain.usecase.GetTracksUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,41 +22,24 @@ class ListViewModel @Inject constructor(
     private val musicController: MusicController
 ) : ViewModel() {
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading = _isLoading.asStateFlow()
+    val pagedTracks: Flow<PagingData<Track>> = getTracksUseCase.getPaged()
+        .cachedIn(viewModelScope)
 
-    val uiState: StateFlow<ListUiState> = combine(
-        getTracksUseCase(),
-        musicController.playbackState,
-        isLoading
-    ) { tracks, playbackState, isLoading ->
-        ListUiState(
-            tracks = tracks,
-            currentPlayingTrack = playbackState.currentTrack,
-            isLoading = isLoading
+    val currentPlayingTrack: StateFlow<Track?> = musicController.playbackState
+        .map { it.currentTrack }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
         )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = ListUiState()
-    )
 
     fun onTrackClick(track: Track) {
         viewModelScope.launch {
             try {
-                val tracks = uiState.value.tracks
-                val index = tracks.indexOf(track)
-                if (index >= 0) musicController.playAll(tracks, index)
-                else musicController.play(track)
+                musicController.play(track)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
 }
-
-data class ListUiState(
-    val tracks: List<Track> = emptyList(),
-    val currentPlayingTrack: Track? = null,
-    val isLoading: Boolean = false
-)

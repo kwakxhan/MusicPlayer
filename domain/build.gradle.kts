@@ -40,6 +40,9 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
 
+    // Paging 3
+    implementation(libs.androidx.paging.runtime)
+
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

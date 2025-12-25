@@ -15,6 +15,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.xhan.musicplayer.feature.R
 import com.xhan.musicplayer.feature.databinding.FragmentListBinding
 import com.xhan.musicplayer.feature.util.BaseDataBindingFragment
+import com.xhan.musicplayer.feature.util.BasePagingAdapter
+import com.xhan.musicplayer.feature.util.OnItemClick
+import com.xhan.musicplayer.feature.util.autoCleared
 import com.xhan.musicplayer.feature.util.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -29,7 +32,25 @@ class ListFragment : BaseDataBindingFragment<FragmentListBinding, ListViewModel>
         container: ViewGroup?
     ): FragmentListBinding = FragmentListBinding.inflate(inflater, container, false)
 
-    private lateinit var trackAdapter: TrackAdapter
+    private val trackHelper by autoCleared {
+        TrackHelper(
+            onItem = OnItemClick { track, _, _ ->
+                viewModel.onTrackClick(track)
+                findNavController().navigate(R.id.action_list_to_detail)
+                false
+            }
+        )
+    }
+
+    private val trackAdapter by autoCleared {
+        BasePagingAdapter(helper = TrackHelper(
+            onItem = OnItemClick { track, _, _ ->
+                viewModel.onTrackClick(track)
+                findNavController().navigate(R.id.action_list_to_detail)
+                false
+            }
+        ))
+    }
 
     private lateinit var permissionHelper: PermissionHelper
 
@@ -58,11 +79,6 @@ class ListFragment : BaseDataBindingFragment<FragmentListBinding, ListViewModel>
     }
 
     private fun setupRecyclerView() {
-        trackAdapter = TrackAdapter { track ->
-            viewModel.onTrackClick(track)
-            findNavController().navigate(R.id.action_list_to_detail)
-        }
-
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = trackAdapter
@@ -73,17 +89,17 @@ class ListFragment : BaseDataBindingFragment<FragmentListBinding, ListViewModel>
     private fun observeUiState() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect { uiState ->
-                    updateUi(uiState)
+                launch {
+                    viewModel.pagedTracks.collect { pagingData ->
+                        trackAdapter.submitData(pagingData)
+                    }
+                }
+                launch {
+                    viewModel.currentPlayingTrack.collect { track ->
+                        trackHelper.setCurrentPlayingTrack(track?.id, trackAdapter)
+                    }
                 }
             }
         }
-    }
-
-    private fun updateUi(uiState: ListUiState) {
-        binding.uiState = uiState
-
-        trackAdapter.submitList(uiState.tracks)
-        trackAdapter.setCurrentPlayingTrack(uiState.currentPlayingTrack?.id)
     }
 }
