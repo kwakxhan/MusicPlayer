@@ -3,15 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-        <import type="com.xhan.musicplayer.feature.list.ListUiState" />
-
-        <variable
-            name="uiState"
-            type="ListUiState" />
-    </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -20,7 +11,6 @@
             android:id="@+id/recyclerView"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:isVisible="@{!uiState.tracks.empty &amp;&amp; !uiState.loading}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -28,24 +18,13 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/item_track" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:isVisible="@{uiState.loading}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
-
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/emptyText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_tracks_found"
             android:textSize="16dp"
-            app:isVisible="@{uiState.tracks.empty &amp;&amp; !uiState.loading}"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

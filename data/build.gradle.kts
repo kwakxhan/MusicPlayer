@@ -43,6 +43,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.guava)
 
+    // Paging 3
+    implementation(libs.androidx.paging.runtime)
+
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
