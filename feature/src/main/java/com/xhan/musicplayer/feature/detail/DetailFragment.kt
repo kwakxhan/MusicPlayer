@@ -38,8 +38,15 @@ class DetailFragment : BaseDataBindingFragment<FragmentDetailBinding, DetailView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupToolbar()
         setupSeekBar()
         observePlaybackState()
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.setNavigationOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
     }
 
     private fun setupSeekBar() {

@@ -21,20 +21,32 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/player_background"
-        android:padding="24dp">
+        android:background="@color/player_background">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIcon="@drawable/ic_arrow_down" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/albumArt"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
             android:contentDescription="@string/album_art"
             android:scaleType="centerCrop"
             app:albumArtUri="@{state.currentTrack.albumArtUri}"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:layout_constraintWidth_percent="0.8"
             tools:src="@android:drawable/ic_menu_gallery" />
 
@@ -42,7 +54,9 @@
             android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="32dp"
+            android:layout_marginEnd="24dp"
             android:gravity="center"
             android:textColor="@color/player_text"
             android:textSize="24dp"
@@ -58,7 +72,9 @@
             android:id="@+id/artist"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
             android:gravity="center"
             android:textColor="@color/player_text"
             android:textSize="16dp"
@@ -73,7 +89,9 @@
             android:id="@+id/album"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="4dp"
+            android:layout_marginEnd="24dp"
             android:gravity="center"
             android:textColor="@color/player_text_secondary"
             android:textSize="14dp"
@@ -88,7 +106,9 @@
             android:id="@+id/seekBar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="32dp"
+            android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/album" />
