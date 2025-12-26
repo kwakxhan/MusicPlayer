@@ -25,71 +25,44 @@ class DetailViewModel @Inject constructor(
             initialValue = PlaybackState()
         )
 
-    fun onPlayPauseClick() {
-        viewModelScope.launch {
-            try {
-                if (playbackState.value.isPlaying) {
-                    musicController.pause()
-                } else {
-                    musicController.resume()
-                }
-            } catch (e: Exception) {
-                handleError("play/pause", e)
-            }
+    fun onPlayPauseClick() = launchWithErrorHandling("play/pause") {
+        if (playbackState.value.isPlaying) {
+            musicController.pause()
+        } else {
+            musicController.resume()
         }
     }
 
-    fun onPreviousClick() {
-        viewModelScope.launch {
-            try {
-                musicController.previous()
-            } catch (e: Exception) {
-                handleError("previous", e)
-            }
-        }
+    fun onPreviousClick() = launchWithErrorHandling("previous") {
+        musicController.previous()
     }
 
-    fun onNextClick() {
-        viewModelScope.launch {
-            try {
-                musicController.next()
-            } catch (e: Exception) {
-                handleError("next", e)
-            }
-        }
+    fun onNextClick() = launchWithErrorHandling("next") {
+        musicController.next()
     }
 
-    fun onSeekTo(position: Long) {
-        viewModelScope.launch {
-            try {
-                musicController.seekTo(position)
-            } catch (e: Exception) {
-                handleError("seekTo $position", e)
-            }
-        }
+    fun onSeekTo(position: Long) = launchWithErrorHandling("seekTo $position") {
+        musicController.seekTo(position)
     }
 
-    fun onRepeatClick() {
-        viewModelScope.launch {
-            try {
-                musicController.toggleRepeatMode()
-            } catch (e: Exception) {
-                handleError("repeat", e)
-            }
-        }
+    fun onRepeatClick() = launchWithErrorHandling("repeat") {
+        musicController.toggleRepeatMode()
     }
 
-    fun onShuffleClick() {
-        viewModelScope.launch {
-            try {
-                musicController.toggleShuffle()
-            } catch (e: Exception) {
-                handleError("shuffle", e)
-            }
-        }
+    fun onShuffleClick() = launchWithErrorHandling("shuffle") {
+        musicController.toggleShuffle()
     }
 
-    private fun handleError(action: String, exception: Exception) {
-        Timber.e(exception, "Error:: $action")
+    private inline fun launchWithErrorHandling(
+        action: String,
+        crossinline block: suspend () -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                block()
+            } catch (e: Exception) {
+                Timber.e(e, "Error:: $action")
+            }
+        }
     }
 }

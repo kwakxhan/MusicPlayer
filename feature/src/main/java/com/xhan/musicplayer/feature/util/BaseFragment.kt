@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
+import com.xhan.musicplayer.feature.R
 
 abstract class BaseDataBindingFragment<VB : ViewDataBinding, VM : ViewModel> : Fragment() {
 
@@ -33,5 +36,22 @@ abstract class BaseDataBindingFragment<VB : ViewDataBinding, VM : ViewModel> : F
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    protected fun showDialog(
+        @StringRes titleRes: Int,
+        @StringRes messageRes: Int,
+        @StringRes positiveButtonRes: Int = R.string.error_dialog_confirm,
+        onDismiss: (() -> Unit)? = null
+    ) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(titleRes)
+            .setMessage(messageRes)
+            .setPositiveButton(positiveButtonRes) { dialog, _ ->
+                dialog.dismiss()
+                onDismiss?.invoke()
+            }
+            .setCancelable(false)
+            .show()
     }
 }
