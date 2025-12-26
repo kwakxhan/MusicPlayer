@@ -5,10 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.xhan.musicplayer.domain.controller.MusicController
 import com.xhan.musicplayer.domain.model.Track
 import com.xhan.musicplayer.domain.usecase.GetTracksUseCase
+import com.xhan.musicplayer.domain.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,11 +22,21 @@ class ListViewModel @Inject constructor(
     private val musicController: MusicController
 ) : ViewModel() {
 
-    val tracks: StateFlow<List<Track>> = getTracksUseCase().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+    val tracks: StateFlow<List<Track>> = getTracksUseCase()
+        .map { result ->
+            when (result) {
+                is Result.Success -> result.data
+                is Result.Error -> {
+                    handleError(result.exception)
+                    emptyList()
+                }
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     val currentPlayingTrack: StateFlow<Track?> = musicController.playbackState
         .map { it.currentTrack }
@@ -32,6 +45,9 @@ class ListViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
+
+    private val _uiEvent = Channel<Event>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     fun onTrackClick(track: Track) {
         viewModelScope.launch {
@@ -45,5 +61,22 @@ class ListViewModel @Inject constructor(
                 e.printStackTrace()
             }
         }
+    }
+
+    private fun handleError(exception: Exception) {
+        viewModelScope.launch {
+            val event = when (exception) {
+                is SecurityException -> Event.ShowPermissionErrorDialog
+                is IllegalArgumentException -> Event.ShowInvalidDataErrorDialog
+                else -> Event.ShowUnexpectedErrorDialog
+            }
+            _uiEvent.send(event)
+        }
+    }
+
+    sealed class Event {
+        data object ShowPermissionErrorDialog : Event()
+        data object ShowInvalidDataErrorDialog : Event()
+        data object ShowUnexpectedErrorDialog : Event()
     }
 }

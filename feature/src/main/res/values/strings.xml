@@ -13,4 +13,13 @@
     <string name="permission_allow_action">허용</string>
     <string name="permission_denied_message">권한이 거부되어 음악을 불러올 수 없습니다.</string>
     <string name="permission_required_message">음악 파일 접근 권한이 필요합니다</string>
+
+    <!-- Error Dialog -->
+    <string name="error_dialog_permission_title">권한 오류</string>
+    <string name="error_dialog_permission_message">음악 파일에 접근할 권한이 없습니다.\n설정에서 권한을 허용해주세요.</string>
+    <string name="error_dialog_invalid_data_title">데이터 오류</string>
+    <string name="error_dialog_invalid_data_message">잘못된 데이터가 감지되었습니다.\n앱을 다시 시작해주세요.</string>
+    <string name="error_dialog_unexpected_title">오류 발생</string>
+    <string name="error_dialog_unexpected_message">음악 목록을 불러오는 중 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.</string>
+    <string name="error_dialog_confirm">확인</string>
 </resources>

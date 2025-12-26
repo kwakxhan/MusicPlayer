@@ -8,6 +8,7 @@ import android.provider.MediaStore
 import com.xhan.musicplayer.data.datasource.MediaStoreDataSource
 import com.xhan.musicplayer.domain.model.Track
 import com.xhan.musicplayer.domain.repository.MusicRepository
+import com.xhan.musicplayer.domain.util.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
@@ -23,19 +24,19 @@ class MusicRepositoryImpl @Inject constructor(
     private val contentResolver: ContentResolver
 ) : MusicRepository {
 
-    override fun getAllTracks(): Flow<List<Track>> = callbackFlow {
+    override fun getAllTracks(): Flow<Result<List<Track>>> = callbackFlow {
         val observer = createMediaStoreObserver()
         registerObserver(observer)
         emitTracks()
         awaitClose { unregisterObserver(observer) }
     }
 
-    override suspend fun getTrackById(id: Long): Track? {
+    override suspend fun getTrackById(id: Long): Result<Track?> {
         return mediaStoreDataSource.getTrackById(id)
     }
 
     /** MediaStore 변경을 감지하는 ContentObserver 생성 */
-    private fun ProducerScope<List<Track>>.createMediaStoreObserver(): ContentObserver {
+    private fun ProducerScope<Result<List<Track>>>.createMediaStoreObserver(): ContentObserver {
         return object : ContentObserver(Handler(Looper.getMainLooper())) {
             override fun onChange(selfChange: Boolean) {
                 launch(Dispatchers.IO) { emitTracks() }
@@ -53,9 +54,9 @@ class MusicRepositoryImpl @Inject constructor(
     }
 
     /** 음악 목록을 조회 후 Flow로 방출 */
-    private suspend fun ProducerScope<List<Track>>.emitTracks() {
-        val tracks = mediaStoreDataSource.getAllTracks()
-        send(tracks)
+    private suspend fun ProducerScope<Result<List<Track>>>.emitTracks() {
+        val result = mediaStoreDataSource.getAllTracks()
+        send(result)
     }
 
     /** ContentObserver 등록 해제 */

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -110,7 +111,48 @@ class ListFragment : BaseDataBindingFragment<FragmentListBinding, ListViewModel>
                         trackHelper.setCurrentPlayingTrack(track?.id, trackAdapter)
                     }
                 }
+                launch {
+                    viewModel.uiEvent.collect { event ->
+                        handleUiEvent(event)
+                    }
+                }
             }
         }
+    }
+
+    private fun handleUiEvent(event: ListViewModel.Event) {
+        when (event) {
+            is ListViewModel.Event.ShowPermissionErrorDialog -> {
+                showErrorDialog(
+                    titleRes = R.string.error_dialog_permission_title,
+                    messageRes = R.string.error_dialog_permission_message
+                )
+            }
+
+            is ListViewModel.Event.ShowInvalidDataErrorDialog -> {
+                showErrorDialog(
+                    titleRes = R.string.error_dialog_invalid_data_title,
+                    messageRes = R.string.error_dialog_invalid_data_message
+                )
+            }
+
+            is ListViewModel.Event.ShowUnexpectedErrorDialog -> {
+                showErrorDialog(
+                    titleRes = R.string.error_dialog_unexpected_title,
+                    messageRes = R.string.error_dialog_unexpected_message
+                )
+            }
+        }
+    }
+
+    private fun showErrorDialog(titleRes: Int, messageRes: Int) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(titleRes)
+            .setMessage(messageRes)
+            .setPositiveButton(R.string.error_dialog_confirm) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setCancelable(false)
+            .show()
     }
 }

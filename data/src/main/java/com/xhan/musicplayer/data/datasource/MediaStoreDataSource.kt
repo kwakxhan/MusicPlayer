@@ -7,6 +7,9 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.net.toUri
 import com.xhan.musicplayer.domain.model.Track
+import com.xhan.musicplayer.domain.util.Result
+import com.xhan.musicplayer.domain.util.errorResult
+import com.xhan.musicplayer.domain.util.successResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -14,20 +17,38 @@ import javax.inject.Inject
 class MediaStoreDataSource @Inject constructor(
     private val contentResolver: ContentResolver
 ) {
-    suspend fun getAllTracks(): List<Track> = withContext(Dispatchers.IO) {
-        queryTracks(
-            selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0", // "IS_MUSIC != 0" → 음악 파일만 찾기
-            selectionArgs = null,
-            sortOrder = "${MediaStore.Audio.Media.TITLE} ASC" // 제목 오름차순 정렬
-        )
+    suspend fun getAllTracks(): Result<List<Track>> = withContext(Dispatchers.IO) {
+        try {
+            val tracks = queryTracks(
+                selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0", // "IS_MUSIC != 0" → 음악 파일만 찾기
+                selectionArgs = null,
+                sortOrder = "${MediaStore.Audio.Media.TITLE} ASC" // 제목 오름차순 정렬
+            )
+            successResult(tracks)
+        } catch (e: SecurityException) {
+            errorResult(e)
+        } catch (e: IllegalArgumentException) {
+            errorResult(e)
+        } catch (e: Exception) {
+            errorResult(e)
+        }
     }
 
-    suspend fun getTrackById(trackId: Long): Track? = withContext(Dispatchers.IO) {
-        queryTracks(
-            selection = "${MediaStore.Audio.Media._ID} = ?", // "_ID = ?" → 특정 ID의 음악 찾기
-            selectionArgs = arrayOf(trackId.toString()), // 탐색할 ID
-            sortOrder = null
-        ).firstOrNull()
+    suspend fun getTrackById(trackId: Long): Result<Track?> = withContext(Dispatchers.IO) {
+        try {
+            val track = queryTracks(
+                selection = "${MediaStore.Audio.Media._ID} = ?", // "_ID = ?" → 특정 ID의 음악 찾기
+                selectionArgs = arrayOf(trackId.toString()), // 탐색할 ID
+                sortOrder = null
+            ).firstOrNull()
+            successResult(track)
+        } catch (e: SecurityException) {
+            errorResult(e)
+        } catch (e: IllegalArgumentException) {
+            errorResult(e)
+        } catch (e: Exception) {
+            errorResult(e)
+        }
     }
 
     /** MediaStore에서 조건에 맞는 음악 파일 검색 */
@@ -58,28 +79,37 @@ class MediaStoreDataSource @Inject constructor(
 
     /** Cursor의 현재 행을 Track 객체로 변환 */
     private fun Cursor.toTrack(): Track {
-        val id =
-            getLong(getColumnIndexOrThrow(MediaStore.Audio.Media._ID))
-        val title =
-            getString(getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)) ?: DEFAULT_TITLE
-        val artist =
-            getString(getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)) ?: DEFAULT_ARTIST
-        val album =
-            getString(getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)) ?: DEFAULT_ALBUM
-        val albumId =
-            getLong(getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID))
-        val duration =
-            getLong(getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION))
+        return try {
+            val id = getLong(getColumnIndexOrThrow(MediaStore.Audio.Media._ID))
+            val title =
+                getString(getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)) ?: DEFAULT_TITLE
+            val artist =
+                getString(getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)) ?: DEFAULT_ARTIST
+            val album =
+                getString(getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)) ?: DEFAULT_ALBUM
+            val albumId = getLong(getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID))
+            val duration = getLong(getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION))
 
-        return Track(
-            id = id,
-            title = title,
-            artist = artist,
-            album = album,
-            albumArtUri = getAlbumArtUri(albumId),
-            duration = duration,
-            contentUri = getContentUri(id)
-        )
+            Track(
+                id = id,
+                title = title,
+                artist = artist,
+                album = album,
+                albumArtUri = getAlbumArtUri(albumId),
+                duration = duration,
+                contentUri = getContentUri(id)
+            )
+        } catch (e: Exception) {
+            Track(
+                id = -1L,
+                title = DEFAULT_TITLE,
+                artist = DEFAULT_ARTIST,
+                album = DEFAULT_ALBUM,
+                albumArtUri = Uri.EMPTY,
+                duration = 0L,
+                contentUri = Uri.EMPTY
+            )
+        }
     }
 
     private fun getContentUri(trackId: Long): Uri {
