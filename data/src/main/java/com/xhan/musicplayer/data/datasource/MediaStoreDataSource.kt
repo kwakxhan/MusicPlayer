@@ -101,12 +101,12 @@ class MediaStoreDataSource @Inject constructor(
             )
         } catch (e: Exception) {
             Track(
-                id = -1L,
+                id = INVALID_TRACK_ID,
                 title = DEFAULT_TITLE,
                 artist = DEFAULT_ARTIST,
                 album = DEFAULT_ALBUM,
                 albumArtUri = Uri.EMPTY,
-                duration = 0L,
+                duration = INVALID_DURATION,
                 contentUri = Uri.EMPTY
             )
         }
@@ -137,6 +137,10 @@ class MediaStoreDataSource @Inject constructor(
         )
 
         private val ALBUM_ART_URI = "content://media/external/audio/albumart".toUri()
+
+        /** 잘못된 트랙 데이터의 기본값 */
+        private const val INVALID_TRACK_ID = -1L
+        private const val INVALID_DURATION = 0L
         private const val DEFAULT_TITLE = "Unknown Title"
         private const val DEFAULT_ARTIST = "Unknown Artist"
         private const val DEFAULT_ALBUM = "Unknown Album"

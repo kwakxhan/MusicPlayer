@@ -55,12 +55,12 @@ class MusicControllerImpl @Inject constructor(
         startPositionUpdateLoop()
     }
 
-    /** 재생 위치를 300ms마다 업데이트 */
+    /** 재생 위치를 주기적으로 업데이트 */
     private fun startPositionUpdateLoop() {
         scope.launch {
             try {
                 while (isActive) {
-                    delay(300)
+                    delay(PLAYBACK_POSITION_UPDATE_INTERVAL)
                     if (mediaController?.isPlaying == true) {
                         updatePlaybackState()
                     }
@@ -219,4 +219,9 @@ class MusicControllerImpl @Inject constructor(
         .setUri(contentUri)
         .setMediaId(id.toString())
         .build()
+
+    companion object {
+        /** 재생 위치 업데이트 간격 (밀리초) */
+        private const val PLAYBACK_POSITION_UPDATE_INTERVAL = 300L
+    }
 }

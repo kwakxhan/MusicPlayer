@@ -2,6 +2,7 @@ package com.xhan.musicplayer.feature.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.xhan.musicplayer.core.util.Constants.STOP_TIMEOUT_MILLIS
 import com.xhan.musicplayer.domain.controller.MusicController
 import com.xhan.musicplayer.domain.model.PlaybackState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +21,7 @@ class DetailViewModel @Inject constructor(
     val playbackState: StateFlow<PlaybackState> = musicController.playbackState
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
             initialValue = PlaybackState()
         )
 

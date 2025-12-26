@@ -2,6 +2,7 @@ package com.xhan.musicplayer.feature.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.xhan.musicplayer.core.util.Constants.STOP_TIMEOUT_MILLIS
 import com.xhan.musicplayer.domain.controller.MusicController
 import com.xhan.musicplayer.domain.model.Track
 import com.xhan.musicplayer.domain.usecase.GetTracksUseCase
@@ -35,7 +36,7 @@ class ListViewModel @Inject constructor(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
             initialValue = emptyList()
         )
 
@@ -43,7 +44,7 @@ class ListViewModel @Inject constructor(
         .map { it.currentTrack }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
             initialValue = null
         )
 
