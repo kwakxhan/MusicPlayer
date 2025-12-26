@@ -2,13 +2,10 @@ package com.xhan.musicplayer.feature.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.xhan.musicplayer.domain.controller.MusicController
 import com.xhan.musicplayer.domain.model.Track
 import com.xhan.musicplayer.domain.usecase.GetTracksUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -22,8 +19,11 @@ class ListViewModel @Inject constructor(
     private val musicController: MusicController
 ) : ViewModel() {
 
-    val pagedTracks: Flow<PagingData<Track>> = getTracksUseCase.getPaged()
-        .cachedIn(viewModelScope)
+    val tracks: StateFlow<List<Track>> = getTracksUseCase().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     val currentPlayingTrack: StateFlow<Track?> = musicController.playbackState
         .map { it.currentTrack }
@@ -36,7 +36,11 @@ class ListViewModel @Inject constructor(
     fun onTrackClick(track: Track) {
         viewModelScope.launch {
             try {
-                musicController.play(track)
+                val allTracks = tracks.value
+                val index = allTracks.indexOfFirst { it.id == track.id }
+                if (index >= 0) {
+                    musicController.playAll(allTracks, index)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

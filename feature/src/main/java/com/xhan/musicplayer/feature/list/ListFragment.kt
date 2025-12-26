@@ -16,8 +16,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.xhan.musicplayer.feature.R
 import com.xhan.musicplayer.feature.databinding.FragmentListBinding
 import com.xhan.musicplayer.feature.detail.DetailViewModel
+import com.xhan.musicplayer.feature.util.BaseAdapter
 import com.xhan.musicplayer.feature.util.BaseDataBindingFragment
-import com.xhan.musicplayer.feature.util.BasePagingAdapter
 import com.xhan.musicplayer.feature.util.OnItemClick
 import com.xhan.musicplayer.feature.util.autoCleared
 import com.xhan.musicplayer.feature.util.showSnackbar
@@ -46,14 +46,7 @@ class ListFragment : BaseDataBindingFragment<FragmentListBinding, ListViewModel>
     }
 
     private val trackAdapter by autoCleared {
-        BasePagingAdapter(
-            helper = TrackHelper(
-                onItem = OnItemClick { track, _, _ ->
-                    viewModel.onTrackClick(track)
-                    findNavController().navigate(R.id.action_list_to_detail)
-                    false
-                }
-            ))
+        BaseAdapter(helper = trackHelper)
     }
 
     private lateinit var permissionHelper: PermissionHelper
@@ -107,8 +100,9 @@ class ListFragment : BaseDataBindingFragment<FragmentListBinding, ListViewModel>
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.pagedTracks.collect { pagingData ->
-                        trackAdapter.submitData(pagingData)
+                    viewModel.tracks.collect { tracks ->
+                        trackHelper.updateTracks(tracks)
+                        trackAdapter.submitList(tracks)
                     }
                 }
                 launch {

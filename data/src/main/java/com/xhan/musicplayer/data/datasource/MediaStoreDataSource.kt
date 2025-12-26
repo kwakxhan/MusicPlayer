@@ -30,14 +30,6 @@ class MediaStoreDataSource @Inject constructor(
         ).firstOrNull()
     }
 
-    suspend fun getPagedTracks(offset: Int, limit: Int): List<Track> = withContext(Dispatchers.IO) {
-        queryTracks(
-            selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0",
-            selectionArgs = null,
-            sortOrder = "${MediaStore.Audio.Media.TITLE} ASC LIMIT $limit OFFSET $offset"
-        )
-    }
-
     /** MediaStore에서 조건에 맞는 음악 파일 검색 */
     private fun queryTracks(
         selection: String,

@@ -67,9 +67,6 @@ dependencies {
     // Fragment
     implementation(libs.androidx.fragment.ktx)
 
-    // Paging 3
-    implementation(libs.androidx.paging.runtime)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

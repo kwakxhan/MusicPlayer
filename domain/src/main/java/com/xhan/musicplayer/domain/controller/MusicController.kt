@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface MusicController {
     val playbackState: StateFlow<PlaybackState>
-    
+
     suspend fun play(track: Track)
     suspend fun playAll(tracks: List<Track>, startIndex: Int = 0)
     suspend fun pause()

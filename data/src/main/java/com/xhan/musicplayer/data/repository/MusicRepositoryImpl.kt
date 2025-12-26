@@ -5,11 +5,7 @@ import android.database.ContentObserver
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import com.xhan.musicplayer.data.datasource.MediaStoreDataSource
-import com.xhan.musicplayer.data.datasource.TrackPagingSource
 import com.xhan.musicplayer.domain.model.Track
 import com.xhan.musicplayer.domain.repository.MusicRepository
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +15,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class MusicRepositoryImpl @Inject constructor(
     private val mediaStoreDataSource: MediaStoreDataSource,
     private val contentResolver: ContentResolver
@@ -34,17 +32,6 @@ class MusicRepositoryImpl @Inject constructor(
 
     override suspend fun getTrackById(id: Long): Track? {
         return mediaStoreDataSource.getTrackById(id)
-    }
-
-    override fun getPagedTracks(): Flow<PagingData<Track>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = PAGE_SIZE,
-                enablePlaceholders = false,
-                initialLoadSize = PAGE_SIZE
-            ),
-            pagingSourceFactory = { TrackPagingSource(mediaStoreDataSource) }
-        ).flow
     }
 
     /** MediaStore 변경을 감지하는 ContentObserver 생성 */
@@ -79,8 +66,5 @@ class MusicRepositoryImpl @Inject constructor(
     companion object {
         /** 하위 URI 변경 시에도 감지 */
         private const val NOTIFY_FOR_DESCENDANTS = true
-
-        /** 페이지네이션 크기 */
-        private const val PAGE_SIZE = 20
     }
 }
