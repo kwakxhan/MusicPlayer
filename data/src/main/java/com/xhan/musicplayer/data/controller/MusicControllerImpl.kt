@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.guava.await
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -58,7 +59,7 @@ class MusicControllerImpl @Inject constructor(
     private fun startPositionUpdateLoop() {
         scope.launch {
             try {
-                while (true) {
+                while (isActive) {
                     delay(300)
                     if (mediaController?.isPlaying == true) {
                         updatePlaybackState()
