@@ -5,6 +5,8 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import coil.load
@@ -12,6 +14,7 @@ import com.xhan.musicplayer.core.util.formatDuration
 import com.xhan.musicplayer.domain.model.RepeatMode
 import com.xhan.musicplayer.feature.R
 import com.xhan.musicplayer.feature.view.MarqueeTextView
+import com.xhan.musicplayer.core.R as Core
 
 /** 트랙 변경 감지용 텍스트 바인딩 */
 @BindingAdapter("trackText", "trackId", requireAll = true)
@@ -71,4 +74,12 @@ fun ImageButton.setShuffleIcon(enabled: Boolean) {
 @BindingAdapter("isVisible")
 fun View.setVisible(visible: Boolean) {
     isVisible = visible
+}
+
+/** Toolbar navigationIcon 색상 바인딩 */
+@BindingAdapter("navigationIconTint")
+fun Toolbar.setNavigationIconTint(shouldApplyTint: Boolean) {
+    if (shouldApplyTint) {
+        navigationIcon?.setTint(ContextCompat.getColor(context, Core.color.icon_tint))
+    }
 }
