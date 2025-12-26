@@ -67,6 +67,9 @@ dependencies {
     // Fragment
     implementation(libs.androidx.fragment.ktx)
 
+    // Timber
+    implementation(libs.timber)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

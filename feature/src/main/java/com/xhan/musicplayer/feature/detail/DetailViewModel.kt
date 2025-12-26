@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,7 +33,7 @@ class DetailViewModel @Inject constructor(
                     musicController.resume()
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                handleError("play/pause", e)
             }
         }
     }
@@ -42,7 +43,7 @@ class DetailViewModel @Inject constructor(
             try {
                 musicController.previous()
             } catch (e: Exception) {
-                e.printStackTrace()
+                handleError("previous", e)
             }
         }
     }
@@ -52,7 +53,7 @@ class DetailViewModel @Inject constructor(
             try {
                 musicController.next()
             } catch (e: Exception) {
-                e.printStackTrace()
+                handleError("next", e)
             }
         }
     }
@@ -62,7 +63,7 @@ class DetailViewModel @Inject constructor(
             try {
                 musicController.seekTo(position)
             } catch (e: Exception) {
-                e.printStackTrace()
+                handleError("seekTo $position", e)
             }
         }
     }
@@ -72,7 +73,7 @@ class DetailViewModel @Inject constructor(
             try {
                 musicController.toggleRepeatMode()
             } catch (e: Exception) {
-                e.printStackTrace()
+                handleError("repeat", e)
             }
         }
     }
@@ -82,8 +83,12 @@ class DetailViewModel @Inject constructor(
             try {
                 musicController.toggleShuffle()
             } catch (e: Exception) {
-                e.printStackTrace()
+                handleError("shuffle", e)
             }
         }
+    }
+
+    private fun handleError(action: String, exception: Exception) {
+        Timber.e(exception, "Error:: $action")
     }
 }

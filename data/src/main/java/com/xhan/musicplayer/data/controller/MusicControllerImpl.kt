@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -66,7 +67,7 @@ class MusicControllerImpl @Inject constructor(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.e(e, "Error startPositionUpdateLoop")
             }
         }
     }
@@ -78,7 +79,7 @@ class MusicControllerImpl @Inject constructor(
             }.onSuccess { controller ->
                 setupMediaController(controller)
             }.onFailure { error ->
-                error.printStackTrace()
+                Timber.e(error, "Failed connectToService")
             }
         }
     }

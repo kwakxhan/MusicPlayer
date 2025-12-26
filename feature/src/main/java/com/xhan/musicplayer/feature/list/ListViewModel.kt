@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,11 +55,9 @@ class ListViewModel @Inject constructor(
             try {
                 val allTracks = tracks.value
                 val index = allTracks.indexOfFirst { it.id == track.id }
-                if (index >= 0) {
-                    musicController.playAll(allTracks, index)
-                }
+                if (index >= 0) musicController.playAll(allTracks, index)
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.e(e, "Error track:: ${track.title}")
             }
         }
     }
