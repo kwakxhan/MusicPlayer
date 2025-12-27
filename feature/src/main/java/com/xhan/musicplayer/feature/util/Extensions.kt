@@ -1,6 +1,8 @@
 package com.xhan.musicplayer.feature.util
 
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.annotation.StringRes
 import com.google.android.material.snackbar.Snackbar
 
@@ -14,6 +16,16 @@ fun View.showSnackbar(
     if (actionText != null && action != null) {
         snackbar.setAction(actionText) { action() }
     }
+
+    val snackbarView = snackbar.view
+    val params = snackbarView.layoutParams as? ViewGroup.MarginLayoutParams
+    params?.let {
+        val density = context.resources.displayMetrics.density
+        val bottomMarginPx = (64 * density).toInt()
+        it.bottomMargin = bottomMarginPx
+        snackbarView.layoutParams = it
+    }
+
     snackbar.show()
 }
 
