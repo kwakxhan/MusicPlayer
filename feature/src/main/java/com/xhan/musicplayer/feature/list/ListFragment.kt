@@ -85,14 +85,15 @@ class ListFragment : BaseDataBindingFragment<FragmentListBinding, ListViewModel>
     }
 
     private fun setupMiniPlayer() {
-        binding.miniPlayer.bind(detailViewModel, viewLifecycleOwner)
-
-        binding.miniPlayer.setOnExpandClickListener {
-            findNavController().navigate(R.id.action_list_to_detail)
-        }
-
-        binding.miniPlayer.setOnPlayPauseClickListener {
-            detailViewModel.onPlayPauseClick()
+        binding.miniPlayerCompose.setContent {
+            androidx.compose.material3.MaterialTheme {
+                com.xhan.musicplayer.feature.view.MiniPlayer(
+                    viewModel = detailViewModel,
+                    onExpandClick = {
+                        findNavController().navigate(R.id.action_list_to_detail)
+                    }
+                )
+            }
         }
     }
 

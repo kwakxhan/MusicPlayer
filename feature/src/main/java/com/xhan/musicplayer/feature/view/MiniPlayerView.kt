@@ -15,6 +15,7 @@ import com.xhan.musicplayer.feature.databinding.LayoutMiniPlayerBinding
 import com.xhan.musicplayer.feature.detail.DetailViewModel
 import kotlinx.coroutines.launch
 
+/** Compose MiniPlayer로 대체 */
 class MiniPlayerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
